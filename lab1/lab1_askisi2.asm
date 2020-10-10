@@ -32,46 +32,48 @@ li $v0,5
 syscall	
 move $t1, $v0
 
-sub $t3,$t1,$t0
-sub $t4,$s1,$s0
-blt $t4,$t3,op_4
+blt $t0,$s0,option_1
+blt $s1,$t1,option_2
 
-blt $t0,$s0,min_op1
-blt $s1,$t1,max
-  
+j for
 
 option_1:
+blt $t1,$s0,for
 add $s0,$0,$t0
 j for
 
 option_2:
+blt $s1,$t0,option_4
 add $s1,$0,$t1
 j for
 
-option_3:
-j for
-
 option_4:
+sub $t3,$t1,$t0
+sub $t4,$s1,$s0
+blt $t3,$t4,for
 add $s0,$0,$t0
 add $s1,$0,$t1
 j for
 
-
 final:
 li $v0, 4		 
-la $a0, final_1_msq   
+la $a0, final_1_msg   
 syscall
-li $v0, 1		
-la $a0, $s0   
+
+li $v0, 1	
+move $a0,$s0	
 syscall
+
 li $v0, 4		 
-la $a0, comma_msq  
+la $a0, comma_msg 
 syscall
+
 li $v0, 1		 
-la $a0, $s1   
+move $a0, $s1   
 syscall
+
 li $v0, 4		
-la $a0, final_2_msq   
+la $a0, final_2_msg   
 syscall
 
 end:
