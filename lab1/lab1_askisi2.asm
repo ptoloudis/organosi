@@ -13,11 +13,11 @@ comma_msg: .asciiz ","
 main:
 add $s0,$0,$0 	# min
 add $s1,$0,$0	# max
-add $t0,$0,$0 	# N1
-add $t1,$0,$0	# N2
+add $t0,$0,$0 	# N1'
+add $t1,$0,$0	# N2'
 
 for:
-li $v0, 4	#input N1	 
+li $v0, 4	#input N1'	 
 la $a0, N1_msg 
 syscall
 li $v0,5
@@ -25,37 +25,37 @@ syscall
 move $t0, $v0 
 bltz $t0,final
 
-li $v0, 4	#input N2	 
+li $v0, 4	#input N2'	 
 la $a0, N2_msg 
 syscall
 li $v0,5
 syscall	
 move $t1, $v0
 
-blt $t0,$s0,option_1
-blt $s1,$t1,option_2
+blt $t0,$s0,option_1	# if N1'<N1 
+blt $s1,$t1,option_2	# if N2'<N2 
 
 j for
 
 option_1:
-blt $t1,$s0,for
+blt $t1,$s0,option_4 	#maximum interval the N2'<N1 
 add $s0,$0,$t0
 j for
 
 option_2:
-blt $s1,$t0,option_4
+blt $s1,$t0,option_4	# maximum interval the N2<N1'
 add $s1,$0,$t1
 j for
 
 option_4:
 sub $t3,$t1,$t0
 sub $t4,$s1,$s0
-blt $t3,$t4,for
+blt $t3,$t4,for 	# if the new space is shorter than the old
 add $s0,$0,$t0
 add $s1,$0,$t1
 j for
 
-final:
+final:			# print 
 li $v0, 4		 
 la $a0, final_1_msg   
 syscall
