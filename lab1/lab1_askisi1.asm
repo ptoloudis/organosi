@@ -13,14 +13,15 @@ li $v0,5
 syscall	
 move $t0, $v0 
 addi $t1,$s0,2
+bltz $t0,failure	# if Number lower of 0 
 
-for:
-bgt $t1,$t0,failure
-beq $t1,$t0,success
-sll $t1,$t1,1
+for:		# search
+bgt $t1,$t0,failure	#if  Power of 2 > Number branch failure
+beq $t1,$t0,success	#if  Power of 2 = Number branch success
+sll $t1,$t1,1	
 j for
 
-failure:
+failure:	
 li $v0,4
 la $a0,failure_msg
 syscall
@@ -28,9 +29,9 @@ j end
 
 success:
 li $v0,4
-la $a0,success_msg
+la $a0,success_msg 
 syscall
 
-end:
+end:	#exit program 
 li $v0,10
 syscall
