@@ -40,7 +40,7 @@ print_msg (first_msg)   #read the size of in1
 read_int ($s2)
 add $t0,$zero,$s2
 add $s1,$zero,$sp
-addi $s1,$s1,-4 ###S
+addi $s1,$s1,-4 
 bne $t0,0, loop1
 
 exit_loop1:
@@ -65,7 +65,7 @@ add $t0,$a1,$a3
 print_msg (final_msg)
 beq $t0,0, exit1
 
-loop3:
+loop3:      #print the table
 lw $t1,0($s0)
 print_int ($t1)
 addi $s0,$s0,-4
@@ -110,8 +110,8 @@ add $t2,$a3,$zero	#max in2
 
 add $t0,$t1,$t2 
 beq $t0,0,exit_merge	#if double 0
-beq $t1,$zero,if_1	    #if in1 0
-beq $t2,$zero,if_2	    #if in2 0
+beq $t1,$zero,if_2	    #if in1 0
+beq $t2,$zero,if_1	    #if in2 0
 
 #if double != 0
 lw  $t3,0($a0)          #t5 is pointer of in1
@@ -143,8 +143,9 @@ bne $t2,$zero,option3
 j exit_merge    
 
 if_1:
-lw  $t5,0($a0)
-add $t3,$zero,$t5
+lw  $t3,0($a0)          #t5 is pointer of in1
+move $t5,$a0
+
 
 option2:
 addi $sp,$sp,-4
@@ -157,8 +158,8 @@ bne $t1,$zero,option2
 j exit_merge
 
 if_2:
-lw  $t6,0($a2)
-add $t4,$zero,$t6
+lw  $t4,0($a2)          #t6 is pointer of in2
+move $t6,$a2
 
 option3:
 addi $sp,$sp,-4
