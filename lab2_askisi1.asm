@@ -124,59 +124,57 @@ blt $t3,$t4,option1     #if in1<in2
 addi $sp,$sp,-4
 sw $t4,0($sp)
 sub $t2,$t2,1
-beq $t2,$zero,if_3
+beq $t2,$zero,if_3      #go to chech  in1 is finish
 addi $t6,$t6,-4
 lw $t4,0($t6)
 bne $t2,$zero,option
 bne $t1,$zero,option2
 j exit_merge 
 
-option1:
+option1:            #if in1>in2
 addi $sp,$sp,-4
 sw $t3,0($sp)
 sub $t1,$t1,1
-beq $t1,$zero,if_4
+beq $t1,$zero,if_4      #go to chech  in2 is finish
 addi $t5,$t5,-4
 lw $t3,0($t5)
 bne $t1,$zero, option
 bne $t2,$zero,option3
 j exit_merge    
 
-if_1:
+if_1:                   #if in2 =0 
 lw  $t3,0($a0)          #t5 is pointer of in1
 move $t5,$a0
 
 
-option2:
+option2:                #if  in2 = NULL or the in2 array is smaller in1
 addi $sp,$sp,-4
 sw $t3,0($sp)
 sub $t1,$t1,1
-beq $t1,$zero,exit_merge
+beq $t1,$zero,exit_merge #if the chech in1 and in2 is 0
 addi $t5,$t5,-4
 lw $t3,0($t5)
 bne $t1,$zero,option2
-j exit_merge
 
-if_2:
+if_2:                    #if  in1 = NULL
 lw  $t4,0($a2)          #t6 is pointer of in2
 move $t6,$a2
 
-option3:
+option3:                #if  in1 = NULL or the in1 array is smaller in2
 addi $sp,$sp,-4
 sw $t4,0($sp)
 sub $t2,$t2,1
-beq $t2,$zero,exit_merge
+beq $t2,$zero,exit_merge    #if the chech in1 and in2 is 0
 addi $t6,$t6,-4
 lw $t4,0($t6)
 bne $t2,$zero,option3 
-j exit_merge
 
 if_3:
-bne $t1,$zero,option2
+bne $t1,$zero,option2   #if in2 is finish 
 j exit_merge
 
 if_4:
-bne $t2,$zero,option3
+bne $t2,$zero,option3   #if in1 is finish
 
 exit_merge:
 jr $ra
