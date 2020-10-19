@@ -1,8 +1,8 @@
 #lab 2 askisi 2
 
 .data
-str:    .space 20 # allazei prin tin xrisi
-sub_str: .space 8 # allazei prin tin xrisi
+str:    .space 100 # allazei prin tin xrisi
+sub_str: .space 100 # allazei prin tin xrisi
 string_msg: .asciiz "Please  give string: "
 substring_msg: .asciiz "Please give substring: "
 final_msg: .asciiz "The max substring has length: "
@@ -14,14 +14,14 @@ keno: .asciiz "\n"
 .macro read_string (%x)
 li $v0, 8
 la $a0,%x
-li $a1,20         #allazei prin tin xrisi
+li $a1,99         #allazei prin tin xrisi
 syscall
 .end_macro
 
 .macro read_sub (%x)
 li $v0, 8
 la $a0,%x
-li $a1,8       #allazei prin tin xrisi
+li $a1,99      #allazei prin tin xrisi
 syscall
 .end_macro
 
@@ -68,31 +68,36 @@ substring:
 
 add	$t1,$zero,$zero # topiko max
 add	$s3,$zero,$zero # max 
-addi    $t2,$zero,20 #allagi prin thn xrisi
+addi    $t2,$zero,100 #allagi prin thn xrisi
 
 move  $t0,$s1 
-lw  $t3, 0($t0)		
+lb  $t3, 0($t0)		
 
 loop:
-lw  $t4,0($s0) 
+lb  $t4,0($s0) 
+beqz $t3,end_substring
 bne $t4, $t3, option	# if $t0 != $t1 then target
 subi $t2, $t2, 1
 beq $t2,$zero,exit_substring
-addi $s0,$s0,4
-addi $t0,$t0,4
+addi $s0,$s0,1
+addi $t0,$t0,1
 addi $t1, $t1, 1
-lw  $t3, 0($t0)		 
+lb  $t3, 0($t0)		 
 blt $t1, $s3, loop	
 add $s3,$zero,$t1
 j loop
 
 option:
 move  $t0,$s1 
-lw $t3, 0($t0)
+lb $t3, 0($t0)
 subi $t2, $t2, 1
 beq $t2,$zero,exit_substring
-addi $s0,$s0,4
+addi $s0,$s0,1
+add  $t1,$zero,$zero
 j loop
+
+end_substring:
+sub $s3,$s3,1
 
 exit_substring:
 move $a3,$s3
