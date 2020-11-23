@@ -53,13 +53,14 @@ endmodule
 // Memory (active 1024 words, from 10 address ).
 // Read : enable ren, address addr, data dout
 // Write: enable wen, address addr, data din.
-module Memory (ren, wen, addr, din, dout);
-  input         ren, wen;
+module Memory (clock, reset,ren, wen, addr, din, dout);
+  input         ren, wen,clock, reset;
   input  [31:0] addr, din;
   output [31:0] dout;
 
   reg [31:0] data[4095:0];
   wire [31:0] dout;
+  genvar i,j;
 
   always @(ren or wen)   // It does not correspond to hardware. Just for error detection
     if (ren & wen)
@@ -115,76 +116,61 @@ endmodule
 // Module to control the data path. 
 //                          Input: op, func of the inpstruction
 //                          Output: all the control signals needed 
-module fsm(output [3:0] op,
-          output [1:0] Branch,
-          output RegWrite, RegDst,  AluSrc, MemWrite ,  MemToReg,
+module fsm(output reg[3:0] op,
+          output reg [1:0] Branch,
+          output reg RegWrite, RegDst,  AluSrc, MemWrite ,  MemToReg,
           input [5:0] opcode, 
           input [5:0] func);
 
-	wire [1:0]ALUOp;	  
+	reg [1:0]ALUOp;	  
 
   always @( opcode)
     begin
+      RegWrite = 1'b0;      
+      RegDst= 1'b0;       
+      AluSrc = 1'b0;
+      Branch = 2'b0;
+      MemWrite = 1'b0;
+      MemToReg = 1'b0;
+      ALUOp = 2'b0;
       case (opcode)
-        R_FORMAT  :
+        `R_FORMAT:
           begin
             RegWrite = 1'b1;      
             RegDst= 1'b1;       
-            AluSrc = 1'b0;
-            Branch = 2'b0;
-            MemWrite = 1'b0;
-            MemToReg = 1'b0;
             ALUOp = 2'b10;
           end
-        LW:
+        `LW:
           begin
-            RegWrite = 1'b1;      
-            RegDst= 1'b0;       
+            RegWrite = 1'b1;        
             AluSrc = 1'b1;
-            Branch = 2'b0;
-            MemWrite = 1'b0;
             MemToReg = 1'b1;
-            ALUOp = 2'b0;
           end
-        SW :
-          begin
-            RegWrite = 1'b0;      
+        `SW :
+          begin   
             RegDst= 1'bx;       
             AluSrc = 1'b1;
-            Branch = 2'b0;
             MemWrite = 1'b1;
             MemToReg = 1'bx;
-            ALUOp = 2'b0;
           end
-        BEQ:
+        `BEQ:
           begin
-            RegWrite = 1'b0;      
             RegDst= 1'bx;       
-            AluSrc = 1'b0;
             Branch = 2'b01;
-            MemWrite = 1'b0;
             MemToReg = 1'bx;
             ALUOp = 2'b01;
           end
-        BNE : //allagi
+        `BNE : //allagi
           begin
-            RegWrite = 1'b0;      
             RegDst= 1'bx;       
-            AluSrc = 1'b0;
             Branch = 2'b10;
-            MemWrite = 1'b0;
             MemToReg = 1'bx;
             ALUOp = 2'b01;
           end
-        ADDI :
+        `ADDI :
           begin
-            RegWrite = 1'b1;      
-            RegDst= 1'b0;       
+            RegWrite = 1'b1;          
             AluSrc = 1'b1;
-            Branch = 2'b0;
-            MemWrite = 1'b0;
-            MemToReg = 1'b0;
-            ALUOp = 2'b0;
           end
         default: 
           begin
