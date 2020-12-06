@@ -1,0 +1,30 @@
+# Loading project lab7
+# Compile of control.v was successful.
+# Compile of cpu.v was successful.
+# Compile of library.v was successful.
+# Compile of testbench.v was successful.
+# 4 compiles, 0 failed with no errors.
+vsim work.cpu_tb
+# vsim work.cpu_tb 
+# Start time: 10:05:43 on Dec 06,2020
+# Loading work.cpu_tb
+# Loading work.cpu
+# Loading work.Memory
+# Loading work.RegFile
+# Loading work.control_bypass_branch
+# Loading work.control_main
+# Loading work.control_stall_ex
+# Loading work.ALU
+# Loading work.control_alu
+# Loading work.control_bypass_ex
+# Loading work.string_manipulation
+# Loading work.instr2str
+# ** Error (suppressible): (vsim-3053) Illegal output or inout port connection for port 'PCSrc'.
+#    Time: 0 ps  Iteration: 0  Instance: /cpu_tb/cpu0/control_main File: /home/kali/intelFPGA_pro/20.3/modelsim_ase/examples/lab7/cpu.v Line: 250
+# ** Error (suppressible): (vsim-3053) Illegal output or inout port connection for port 'Jump'.
+#    Time: 0 ps  Iteration: 0  Instance: /cpu_tb/cpu0/control_main File: /home/kali/intelFPGA_pro/20.3/modelsim_ase/examples/lab7/cpu.v Line: 250
+# ** Error (suppressible): (vsim-3053) Illegal output or inout port connection for port 'bubble_idex'.
+#    Time: 0 ps  Iteration: 0  Instance: /cpu_tb/cpu0/control_main File: /home/kali/intelFPGA_pro/20.3/modelsim_ase/examples/lab7/cpu.v Line: 250
+# Error loading design
+# End time: 10:05:44 on Dec 06,2020, Elapsed time: 0:00:01
+# Errors: 3, Warnings: 8

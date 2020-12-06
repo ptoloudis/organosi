@@ -31,10 +31,10 @@ module cpu(input clock, input reset);
 
 //dikes mas
   wire [1:0] bypassA, bypassB, bypassC, bypassD;
-  wire stall, ifid_write, pc_write; 
+  wire stall, ifid_write, pc_write, Jump, bubble_idex ,PCSrc; 
   wire [4:0] instr_sh;
   reg  [4:0] IDEX_Shamt;
-  reg  Jump, bubble_idex ,PCSrc , Zero_b;
+  reg   Zero_b;
   reg   [31:0] RDA ,RDB;
   wire  [31:0]D , J;
 
@@ -47,17 +47,19 @@ module cpu(input clock, input reset);
        PC <= 0;
     else if (pc_write == 1'b1)
        PC <= PC;
-    else if (PCSrc == 1'b1) begin
-       PC <= D + PC;
-    end
-    else if (Jump == 1'b1) begin
-      PC <= J;
-    end
     else 
        PC <= PC + 4;
   end
   
+  always @(posedge clock)
+    begin
+      if (PCSrc == 1'b1) 
+        PC <= D + PC;
+      if (Jump == 1'b1)
+        PC <= J;
+    end
   // IFID pipeline register
+
  always @(posedge clock or negedge reset)
   begin 
     if (reset == 1'b0)     
@@ -65,14 +67,6 @@ module cpu(input clock, input reset);
        IFID_PCplus4 <= 32'b0;    
        IFID_instr <= 32'b0;
     end 
-    else if(ifid_write == 1'b1)begin
-      IFID_PCplus4 <=  IFID_PCplus4;
-      IFID_instr <= IFID_instr;
-    end
-    else if(bubble_idex == 1'b1)begin
-      IFID_PCplus4 <= 32'b0;    
-      IFID_instr <= 32'b0;
-    end
     else 
       begin
        IFID_PCplus4 <= PC + 32'd4;
@@ -80,13 +74,21 @@ module cpu(input clock, input reset);
     end
   end
   
+  always @(posedge clock)begin
+    if(ifid_write == 1'b1)begin
+      IFID_PCplus4 <=  IFID_PCplus4;
+      IFID_instr <= IFID_instr;
+    end
+    if(bubble_idex == 1'b1)begin
+      IFID_PCplus4 <= 32'b0;    
+      IFID_instr <= 32'b0;
+    end
+  end
+
 // Instruction memory 1KB
 Memory cpu_IMem(clock, reset, 1'b1, 1'b0, PC>>2, 32'b0, instr);
   
-  
-  
-  
-  
+   
 /***************** Instruction Decode Unit (ID)  ****************/
 assign opcode = IFID_instr[31:26];
 assign func = IFID_instr[5:0];
@@ -103,9 +105,9 @@ assign J = IFID_instr[25:0] * 4;
 // Register file
 RegFile cpu_regs(clock, reset, instr_rs, instr_rt, MEMWB_RegWriteAddr, MEMWB_RegWrite, wRegData, rdA, rdB);
 
-control_bypass_branch bypass_branch(bypassC, bypassD, instr_rs, instr_rt, IDEX_instr_rs, IDEX_instr_rt,  EXMEM_RegWriteAddr, MEMWB_RegWriteAddr , EXMEM_RegWrite, MEMWB_RegWrite);
+control_bypass_branch bypass_branch(bypassC, bypassD, opcode, instr_rs, instr_rt, IDEX_instr_rs, IDEX_instr_rt, EXMEM_RegWriteAddr, MEMWB_RegWriteAddr , EXMEM_RegWrite, MEMWB_RegWrite);
 
-always @( negedge clock)
+always @(posedge clock)
 begin
   case (bypassC)
     2'b00: RDA = rdA;
@@ -261,7 +263,7 @@ control_main control_main (RegDst,
                   opcode);
                   
 // Instantiation of Control Unit that generates stalls goes here
-control_stall_ex control_stall(stall, ifid_write, pc_write, IDEX_MemRead, IDEX_instr_rt, IDEX_instr_rs, instr_rs, instr_rt,bubble_idex);
+control_stall_ex control_stall(stall, ifid_write, pc_write, IDEX_MemRead, IDEX_instr_rt, IDEX_instr_rs, instr_rs, instr_rt, bubble_idex);
                           
 /***************** Execution Unit (EX)  ****************/
 always @( negedge clock)

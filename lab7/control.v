@@ -164,6 +164,7 @@ endmodule
 
 module  control_bypass_branch(output reg [1:0] bypassC,
                        output reg [1:0] bypassD,
+                       input [5:0]      opcode,
                        input [4:0] raA,
                        input [4:0] raB,
                        input [4:0] idex_rs,
@@ -173,7 +174,7 @@ module  control_bypass_branch(output reg [1:0] bypassC,
                        input       exmem_regwrite,
                        input       memwb_regwrite);
        
-  always @(*)begin
+  always @(opcode == `BEQ || opcode == `BNE)begin
     bypassC = 2'b0;
     bypassD = 2'b0;
     if (idex_rs ==raA)

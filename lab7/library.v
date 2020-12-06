@@ -76,10 +76,10 @@ module RegFile (clock, reset, raA, raB, wa, wen, wd, rdA, rdB);
   
   reg [31:0] data[31:0];
   
-  always @(posedge clock ) begin
-    rdA = data[raA];
-    rdB = data[raB];
-  end
+  //always @(posedge clock ) begin
+   assign rdA = data[raA];
+   assign rdB = data[raB];
+  
   
   // Make sure  that register file is only written at the negative edge of the clock 
   always @(negedge clock or negedge reset)
