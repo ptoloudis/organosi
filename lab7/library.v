@@ -24,6 +24,7 @@ module ALU #(parameter N = 32) (out, zero, inA, inB, shamt, op);
 			(op == 4'b1100) ? ~(inA | inB) :
       (op == 4'b1000) ? (inB << shamt):
       (op == 4'b1001) ? (inB << inA):
+      (op == 4'b1101) ? (inA ^ inB): //xor
 			'bx;
 
   assign zero = (out == 0);

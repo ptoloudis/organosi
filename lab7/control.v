@@ -173,23 +173,29 @@ module  control_bypass_branch(output reg [1:0] bypassC,
                        input [4:0] memwb_rd,
                        input       exmem_regwrite,
                        input       memwb_regwrite);
-       
-  always @(opcode == `BEQ || opcode == `BNE)begin
-    bypassC = 2'b0;
-    bypassD = 2'b0;
-    if (idex_rs ==raA)
-      bypassC = 2'b11;
-    if (idex_rs ==raB)
-      bypassD = 2'b11;
-    if ( exmem_regwrite == 1 & exmem_rd != 0 & exmem_rd == raA)
-      bypassC = 2'b10;
-    if ( exmem_regwrite == 1 & exmem_rd != 0 & exmem_rd == raB)
-      bypassD = 2'b10;
-    if (memwb_regwrite == 1 & memwb_rd != 0 & memwb_rd == raA & (exmem_rd != raA || exmem_regwrite == 0))
-      bypassC = 2'b1;
-    if (memwb_regwrite == 1 & memwb_rd != 0 & memwb_rd == raB & (exmem_rd != raB || exmem_regwrite == 0))
-      bypassD = 2'b1;     
-  end                       
+
+  always @(*)begin
+    if (opcode == `BEQ || opcode == `BNE) begin
+      if (idex_rs ==raA)
+        bypassC = 2'b11;
+      if (idex_rs ==raB)
+        bypassD = 2'b11;
+      if ( exmem_regwrite == 1 & exmem_rd != 0 & exmem_rd == raA)
+        bypassC = 2'b10;
+      if ( exmem_regwrite == 1 & exmem_rd != 0 & exmem_rd == raB)
+        bypassD = 2'b10;
+      if (memwb_regwrite == 1 & memwb_rd != 0 & memwb_rd == raA & (exmem_rd != raA || exmem_regwrite == 0))
+        bypassC = 2'b1;
+      if (memwb_regwrite == 1 & memwb_rd != 0 & memwb_rd == raB & (exmem_rd != raB || exmem_regwrite == 0))
+        bypassD = 2'b1;     
+    end
+    else begin
+      bypassC = 2'b00;
+      bypassD = 2'b00;
+    end
+  end
+    
+                   
 endmodule
 
 /**************** Module for Stall Detection in ID pipe stage goes here  *********/
@@ -232,7 +238,7 @@ module control_alu(output reg [3:0] ALUOp,
               6'b100101: ALUOp = 4'b0001; // or
               6'b100111: ALUOp = 4'b1100; // nor
               6'b101010: ALUOp = 4'b0111; // slt
-              
+              6'b100110: ALUOp = 4'b1101; //xor
               default: ALUOp = 4'b0000;       
              endcase 
           end   

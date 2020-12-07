@@ -13,6 +13,7 @@
 `define OR  6'b100101
 `define NOR 6'b100111
 `define SLT 6'b101010
+`define XOR 6'b100110
 
 // I-format 
 `define ADDI 6'b001000
